@@ -23,7 +23,7 @@ public class TorrentService {
 
     @NotNull
     public List<Torrent> list() {
-        return new ArrayList<>();
+        return torrentRepository.findAll();
     }
 
     @Null
@@ -49,7 +49,6 @@ public class TorrentService {
                     .build();
             generated.add(t);
         }
-        List<Torrent> saved = torrentRepository.save(generated);
-        return saved;
+        return torrentRepository.save(generated);
     }
 }
