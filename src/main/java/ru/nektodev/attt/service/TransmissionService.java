@@ -6,9 +6,13 @@ import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+import ru.nektodev.attt.model.TransmissionException;
 
+import javax.annotation.Nullable;
 import javax.validation.constraints.Null;
 import java.io.IOException;
 import java.io.InputStream;
@@ -16,14 +20,16 @@ import java.util.Map;
 
 @Component
 public class TransmissionService {
+    public static final Logger LOG = LoggerFactory.getLogger(TransmissionService.class);
+
     @Value("${transmission.url}")
     private String TRANSMISSION_URL;
 
     public TransmissionService() {
     }
 
-    @Null
-    public String addToTransmission(String downloadDir, String magnet) {
+    @Nullable
+    public String addToTransmission(String downloadDir, String magnet) throws TransmissionException {
         try(CloseableHttpClient client = HttpClients.createDefault()) {
             HttpPost post = new HttpPost(TRANSMISSION_URL);
             post.addHeader("X-Transmission-Session-Id", getSession());
@@ -38,10 +44,15 @@ public class TransmissionService {
             post.setEntity(params);
             HttpResponse response = client.execute(post);
 
-            return getHash(response.getEntity().getContent());
+            String hash = getHash(response.getEntity().getContent());
+            if (hash == null || hash.isEmpty()) {
+                LOG.error(String.format("Couldn't add torrent with magnet %s to transmission. The hash is null or empty", magnet));
+                throw new TransmissionException(String.format("Cannot add magnet %s to Transmission. The hash is null or empty", magnet));
+            }
+            return hash;
         } catch (IOException e) {
-            e.printStackTrace();
-            return null;
+            LOG.error("Couldn't add torrent to transmission.", e);
+            throw new TransmissionException(String.format("Cannot add magnet %s to Transmission.", magnet));
         }
     }
 

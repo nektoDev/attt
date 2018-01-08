@@ -20,8 +20,11 @@ public class TorrentTO {
     private String name;
     private String url;
     private String magnet;
-    private Date created;
+    private String downloadDirectory;
     private boolean tracked;
+    private Date created;
+    private Date lastChecked;
+    private Date lastUpdated;
 
     public TorrentTO() {
     }
@@ -34,6 +37,9 @@ public class TorrentTO {
         this.magnet = t.getMagnet();
         this.created = t.getCreated();
         this.tracked = t.isTracked();
+        this.downloadDirectory = t.getDownloadDirectory();
+        this.lastChecked = t.getLastChecked();
+        this.lastUpdated = t.getLastUpdated();
     }
 
     @Transient
@@ -46,6 +52,9 @@ public class TorrentTO {
                 .name(this.name)
                 .tracked(this.tracked)
                 .url(this.url)
+                .downloadDirectory(this.downloadDirectory)
+                .lastChecked(this.lastChecked)
+                .lastUpdated(this.lastUpdated)
                 .build();
     }
 }

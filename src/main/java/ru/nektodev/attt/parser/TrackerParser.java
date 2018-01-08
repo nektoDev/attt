@@ -5,7 +5,9 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import ru.nektodev.attt.model.Torrent;
+import ru.nektodev.attt.model.TrackerParserException;
 
+import javax.annotation.Nonnull;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -14,7 +16,8 @@ import java.util.stream.Collectors;
 
 public class TrackerParser {
 
-    public String getMagnetFromUrl(String url) throws IOException {
+    @Nonnull
+    public String getMagnetFromUrl(@Nonnull String url) throws IOException, TrackerParserException {
         Document doc = Jsoup.connect(url).get();
         Elements elements = doc.select("a");
         elements.attr("href");
@@ -26,7 +29,7 @@ public class TrackerParser {
             }
         }
 
-        return null;
+        throw new TrackerParserException(String.format("Magnet URL has not been found on URL: %s", url));
     }
 
     private boolean isMagnet(Element element) {

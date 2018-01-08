@@ -10,6 +10,7 @@ import ru.nektodev.attt.api.dto.TorrentAddRequest;
 import ru.nektodev.attt.api.dto.TorrentGenerateRequest;
 import ru.nektodev.attt.api.dto.TorrentTO;
 import ru.nektodev.attt.model.Torrent;
+import ru.nektodev.attt.model.TrackerParserException;
 import ru.nektodev.attt.model.TransmissionException;
 import ru.nektodev.attt.service.TorrentService;
 
@@ -44,7 +45,7 @@ public class TorrentFacade {
         try {
             Torrent addedTorrent = this.torrentService.addByURL(request.getUrl(), request.getKind());
             return ResponseEntity.ok(new TorrentTO(addedTorrent));
-        } catch (IOException | TransmissionException e) {
+        } catch (IOException | TransmissionException | TrackerParserException e) {
             LOG.error("Cannot add torrent. ", e);
             throw new RuntimeException(e);
         }

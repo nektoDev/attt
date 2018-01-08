@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import ru.nektodev.attt.api.dto.MediaKind;
 import ru.nektodev.attt.model.Torrent;
+import ru.nektodev.attt.model.TrackerParserException;
 import ru.nektodev.attt.model.TransmissionException;
 import ru.nektodev.attt.parser.TrackerParser;
 import ru.nektodev.attt.repository.TorrentRepository;
@@ -42,24 +43,25 @@ public class TorrentService {
     }
 
     @Null
-    public Torrent addByURL(@Nonnull String url, @Nonnull MediaKind kind) throws IOException, TransmissionException {
+    public Torrent addByURL(@Nonnull String url, @Nonnull MediaKind kind) throws IOException, TransmissionException, TrackerParserException {
+        LOG.info(String.format("Got request to add: %s with kind: %s", url, kind.toString()));
         TrackerParser parser = new TrackerParser();
         String magnet = parser.getMagnetFromUrl(url);
 
         //TODO define download dir
         String downloadPath = defaultDownloadDirectory + "/" + kind.getDefaultPath();
-        String hash = transmissionService.addToTransmission(downloadPath, magnet);
-        if (hash == null || hash.isEmpty()) {
-            throw new TransmissionException(String.format("Cannot add magnet %s from URL %s to Transmission. The hash is null or empty", magnet, url));
-        }
+        LOG.debug(String.format("Download directory: %s", downloadPath));
 
+        String hash = transmissionService.addToTransmission(downloadPath, magnet);
         Torrent result = Torrent.builder()
                 .created(new Date())
                 .url(url)
                 .magnet(magnet)
                 .hash(hash)
                 .tracked(MediaKind.SERIES == kind)
+                .downloadDirectory(downloadPath)
                 .build();
+        LOG.info(String.format("Added torrent: %s", result.toString()));
 
         return torrentRepository.save(result);
     }
