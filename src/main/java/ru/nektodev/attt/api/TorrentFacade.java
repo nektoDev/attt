@@ -1,6 +1,5 @@
 package ru.nektodev.attt.api;
 
-import jdk.nashorn.api.scripting.ScriptUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
