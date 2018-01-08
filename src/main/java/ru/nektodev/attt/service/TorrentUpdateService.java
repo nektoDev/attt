@@ -32,6 +32,7 @@ public class TorrentUpdateService {
     public void checkAllForUpdates() {
         List<Torrent> tracked = torrentRepository.findAllByTracked(true);
         for (Torrent torrent : tracked) {
+            LOG.debug(String.format("Check torrent id=%s, name=%s.", torrent.getId(), torrent.getName()));
             if (torrent.getUrl() == null || torrent.getUrl().isEmpty()) {
                 LOG.warn(String.format("Torrent id=%s, name=%s does not have url", torrent.getId(), torrent.getName()));
                 continue;
