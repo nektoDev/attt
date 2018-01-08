@@ -1,5 +1,6 @@
 package ru.nektodev.attt.service;
 
+import com.google.common.base.Strings;
 import org.fluttercode.datafactory.impl.DataFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -14,6 +15,7 @@ import ru.nektodev.attt.parser.TrackerParser;
 import ru.nektodev.attt.repository.TorrentRepository;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Null;
 import java.io.IOException;
@@ -43,13 +45,19 @@ public class TorrentService {
     }
 
     @Null
-    public Torrent addByURL(@Nonnull String url, @Nonnull MediaKind kind) throws IOException, TransmissionException, TrackerParserException {
+    public Torrent addByURL(@Nonnull String url,
+                            @Nonnull MediaKind kind,
+                            @Nullable String downloadPath,
+                            @Nullable String name)
+            throws IOException, TransmissionException, TrackerParserException {
         LOG.info(String.format("Got request to add: %s with kind: %s", url, kind.toString()));
         TrackerParser parser = new TrackerParser();
         String magnet = parser.getMagnetFromUrl(url);
 
         //TODO define download dir
-        String downloadPath = defaultDownloadDirectory + "/" + kind.getDefaultPath();
+        if (Strings.isNullOrEmpty(downloadPath)) {
+            downloadPath = defaultDownloadDirectory + "/" + kind.getDefaultPath();
+        }
         LOG.debug(String.format("Download directory: %s", downloadPath));
 
         String hash = transmissionService.addToTransmission(downloadPath, magnet);
@@ -58,6 +66,7 @@ public class TorrentService {
                 .url(url)
                 .magnet(magnet)
                 .hash(hash)
+                .name(name)
                 .tracked(MediaKind.SERIES == kind)
                 .downloadDirectory(downloadPath)
                 .build();

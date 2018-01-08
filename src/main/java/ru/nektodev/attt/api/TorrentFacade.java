@@ -19,7 +19,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @RestController
-@CrossOrigin
+@CrossOrigin("http://localhost:4200")
 @RequestMapping("/torrent")
 public class TorrentFacade {
     private static Logger LOG = LoggerFactory.getLogger(TorrentFacade.class);
@@ -32,6 +32,7 @@ public class TorrentFacade {
     }
 
     @RequestMapping(method = RequestMethod.GET)
+    @CrossOrigin("http://localhost:4200")
     public ResponseEntity<List<TorrentTO>> list() {
         List<Torrent> list = this.torrentService.list();
         List<TorrentTO> result = list.stream().map(TorrentTO::new).collect(Collectors.toList());
@@ -39,11 +40,17 @@ public class TorrentFacade {
     }
 
     @RequestMapping(method = RequestMethod.POST)
+    @CrossOrigin("http://localhost:4200")
     public ResponseEntity<TorrentTO> addByUrl(@RequestBody TorrentAddRequest request) {
         validateAddTorrentRequest(request);
 
         try {
-            Torrent addedTorrent = this.torrentService.addByURL(request.getUrl(), request.getKind());
+            Torrent addedTorrent = this.torrentService.addByURL(
+                    request.getUrl(),
+                    request.getKind(),
+                    request.getDownloadDirectory(),
+                    request.getName()
+            );
             return ResponseEntity.ok(new TorrentTO(addedTorrent));
         } catch (IOException | TransmissionException | TrackerParserException e) {
             LOG.error("Cannot add torrent. ", e);
@@ -69,7 +76,6 @@ public class TorrentFacade {
         List<Torrent> generated = this.torrentService.generate(request.getCount());
         return ResponseEntity.ok(generated.stream().map(TorrentTO::new).collect(Collectors.toList()));
     }
-
 
 
 }
