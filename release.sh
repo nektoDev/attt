@@ -11,13 +11,12 @@ fi
 
 echo "Start releasing with $RELEASE bump"
 gradle clean
-gradle build -Prelease -PbumpComponent=$RELEASE
+gradle build tag -Prelease -PbumpComponent=$RELEASE
 gradle jar
 gradle bootRepackage
 gradle docker
 gradle dockerTag
 gradle dockerPush
 gradle dockerPushLatest
-gradle tag
 gradle printVersion
 echo "Release finished"
