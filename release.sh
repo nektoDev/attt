@@ -10,6 +10,14 @@ if [ -z "$RELEASE" ]
 fi
 
 echo "Start releasing with $RELEASE bump"
-gradle clean build jar bootRepackage docker dockerTag dockerPush dockerPushLatest tag -Prelease -PbumpComponent=$RELEASE
+gradle clean
+gradle build -Prelease -PbumpComponent=$RELEASE
+gradle jar
+gradle bootRepackage
+gradle docker
+gradle dockerTag
+gradle dockerPush
+gradle dockerPushLatest
+gradle tag
 gradle printVersion
 echo "Release finished"
