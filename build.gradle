@@ -10,35 +10,19 @@ buildscript {
 	}
 	dependencies {
 		classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}")
-		classpath "gradle.plugin.com.palantir.gradle.docker:gradle-docker:0.17.2"
 	}
 }
 
 plugins {
-	id "net.vivin.gradle-semantic-build-versioning" version "2.0.2"
 }
 
 apply plugin: 'maven'
 apply plugin: 'java'
 apply plugin: 'org.springframework.boot'
-apply plugin: "com.palantir.docker"
 
 group = 'ru.nektodev'
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
-
-project.version.with {
-	tagPrefix="v"
-}
-
-docker {
-	name "nektodev/attt"
-	tags 'latest'
-	files libsDir.list()
-	dockerfile file('docker/Dockerfile')
-	dependsOn tasks.jar, tasks.bootRepackage
-	pull true
-}
 
 jar {
 	baseName = 'attt'
@@ -59,41 +43,4 @@ dependencies {
 	compile group: 'org.apache.httpcomponents', name: 'httpclient', version: '4.5.2'
 	runtime('org.springframework.boot:spring-boot-devtools')
 	testCompile('org.springframework.boot:spring-boot-starter-test')
-}
-
-task releaseMajor(dependsOn: ['clean', 'bumpMajor', 'release', 'docker']) << {
-	println "Release ${project.name} version: ${project.version}"
-}
-
-task releaseMinor(dependsOn: ['clean', 'bumpMinor', 'release', 'docker']) << {
-	println "Release ${project.name} version: ${project.version}"
-}
-
-task releasePatch(dependsOn: ['clean', 'bumpPatch', 'release', 'docker']) << {
-	println "Release ${project.name} version: ${project.version}"
-}
-
-task dockerTagAndPush << {
-	dockerTag.execute()
-
-	exec {
-		commandLine "docker", "tag", "${docker.name}:latest", "${docker.name}:v${project.version}"
-	}
-
-	dockerPush.execute()
-}
-
-releasePatch.doLast {
-	dockerTagAndPush.execute()
-	tag.execute()
-}
-
-releaseMinor.doLast {
-	dockerTagAndPush.execute()
-	tag.execute()
-}
-
-releaseMajor.doLast {
-	dockerTagAndPush.execute()
-	tag.execute()
 }
