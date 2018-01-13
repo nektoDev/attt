@@ -1,19 +1,22 @@
+import net.vivin.gradle.versioning.VersionComponent
+
 buildscript {
-	ext {
-		springBootVersion = '1.5.9.RELEASE'
-	}
-	repositories {
-		mavenCentral()
-		maven {
-			url "https://plugins.gradle.org/m2/"
-		}
-	}
-	dependencies {
-		classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}")
-	}
+    ext {
+        springBootVersion = '1.5.9.RELEASE'
+    }
+    repositories {
+        mavenCentral()
+        maven {
+            url "https://plugins.gradle.org/m2/"
+        }
+    }
+    dependencies {
+        classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}")
+    }
 }
 
 plugins {
+    id 'net.vivin.gradle-semantic-build-versioning' version '4.0.0' apply false
 }
 
 apply plugin: 'maven'
@@ -25,22 +28,31 @@ sourceCompatibility = 1.8
 targetCompatibility = 1.8
 
 jar {
-	baseName = 'attt'
+    baseName = 'attt'
 }
 
 repositories {
-	mavenCentral()
-	mavenLocal()
+    mavenCentral()
+    mavenLocal()
 }
 
 dependencies {
-	compile('org.springframework.boot:spring-boot-starter-actuator')
-	compile('org.springframework.boot:spring-boot-starter-data-mongodb')
-	compile('org.springframework.boot:spring-boot-starter-web')
-	compile group: 'org.fluttercode.datafactory', name: 'datafactory', version: '0.8'
-	compile group: 'org.jsoup', name: 'jsoup', version: '1.9.2'
-	compile group: 'com.google.guava', name: 'guava', version: '23.6-jre'
-	compile group: 'org.apache.httpcomponents', name: 'httpclient', version: '4.5.2'
-	runtime('org.springframework.boot:spring-boot-devtools')
-	testCompile('org.springframework.boot:spring-boot-starter-test')
+    compile('org.springframework.boot:spring-boot-starter-actuator')
+    compile('org.springframework.boot:spring-boot-starter-data-mongodb')
+    compile('org.springframework.boot:spring-boot-starter-web')
+    compile group: 'org.fluttercode.datafactory', name: 'datafactory', version: '0.8'
+    compile group: 'org.jsoup', name: 'jsoup', version: '1.9.2'
+    compile group: 'com.google.guava', name: 'guava', version: '23.6-jre'
+    compile group: 'org.apache.httpcomponents', name: 'httpclient', version: '4.5.2'
+    runtime('org.springframework.boot:spring-boot-devtools')
+    testCompile('org.springframework.boot:spring-boot-starter-test')
+}
+
+task releasePatch(dependsOn: clean) {
+    group 'Release tasks'
+    description 'Bump patch application version, build it, push tag with version and create and push the docker image.'
+
+    doLast {
+        println "Release ${project.name} version: ${project.version}"
+    }
 }
