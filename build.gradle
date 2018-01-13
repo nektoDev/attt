@@ -48,11 +48,14 @@ dependencies {
     testCompile('org.springframework.boot:spring-boot-starter-test')
 }
 
-task releasePatch(dependsOn: clean) {
+task releaseBuild(dependsOn: [clean]) {
     group 'Release tasks'
-    description 'Bump patch application version, build it, push tag with version and create and push the docker image.'
+    description 'Build project, push tag with version and create and push the docker image.'
+
+    finalizedBy build
 
     doLast {
         println "Release ${project.name} version: ${project.version}"
+        println(project.hasProperty('release'))
     }
 }
