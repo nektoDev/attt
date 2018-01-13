@@ -18,7 +18,6 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @RestController
-@CrossOrigin("http://localhost:4200")
 @RequestMapping("/torrent")
 public class TorrentFacade {
     private static Logger LOG = LoggerFactory.getLogger(TorrentFacade.class);
@@ -31,7 +30,6 @@ public class TorrentFacade {
     }
 
     @RequestMapping(method = RequestMethod.GET)
-    @CrossOrigin("http://localhost:4200")
     public ResponseEntity<List<TorrentTO>> list() {
         List<Torrent> list = this.torrentService.list();
         List<TorrentTO> result = list.stream().map(TorrentTO::new).collect(Collectors.toList());
@@ -39,7 +37,6 @@ public class TorrentFacade {
     }
 
     @RequestMapping(method = RequestMethod.POST)
-    @CrossOrigin("http://localhost:4200")
     public ResponseEntity<TorrentTO> addByUrl(@RequestBody TorrentAddRequest request) {
         validateAddTorrentRequest(request);
 
