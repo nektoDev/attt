@@ -12,15 +12,15 @@ Automatically send magnet link to transmission when it changes.
  `gradle build`
  
  ### Releases:
- `gradle releaseMajor` - build, up major version, build Docker image and push it to hub
- `gradle releaseMinor` - build, up minor version, build Docker image and push it to hub
- `gradle releasePatch` - build, up version, build Docker image and push it to hub
+ `./release.sh patch` - build, up major version, build Docker image and push it to hub
+ `./release.sh [minor]` - _default,_ build, up minor version, build Docker image and push it to hub
+ `./release.sh major` - build, up version, build Docker image and push it to hub
 
  ### Docker
  #### Start ATTT:
  ```
  docker pull nektodev/attt
- docker build --restart=always --net=container:vpn --name=attt --link mongodb:mongodbhost nektodev/attt
+ docker build --restart=always --net=container:vpn --name=attt -e DB_HOST= -e TRANSMISSION_HOST= nektodev/attt
  docker start attt
  ```
  #### expose ports for service via vpn
