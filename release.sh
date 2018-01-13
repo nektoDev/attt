@@ -11,3 +11,5 @@ fi
 
 echo "Start releasing with $RELEASE bump"
 gradle clean build jar bootRepackage docker dockerTag dockerPush dockerPushLatest tag -Prelease -PbumpComponent=$RELEASE
+gradle printVersion
+echo "Release finished"
